@@ -1,0 +1,67 @@
+import pytest
+import requests
+from expected_response import *
+from dt_json import *
+
+td = [
+    ('https://reqres.in/api/users?page=2', 200, er_1),
+    ('https://reqres.in/api/users/2', 200, er_2),
+    ('https://reqres.in/api/users/23', 404, None),
+    ('https://reqres.in/api/unknown', 200, er_4),
+    ('https://reqres.in/api/unknown/2', 200, er_5),
+    ('https://reqres.in/api/unknown/23', 404, None),
+    ('https://reqres.in/api/users?delay=3', 200, er_15)
+]
+@pytest.mark.parametrize("url, expected_status_code, expected_result", td)
+def test_user_requests(url, expected_status_code, expected_result):
+    request = requests.get(url)
+    assert request.status_code == expected_status_code
+    if expected_result is not None:
+        received_request = request.json()
+        assert received_request == expected_result
+
+def test_rs_7():
+    request = requests.post('https://reqres.in/api/users', json=dt_7)
+    received_request = request.json()
+    assert request.status_code == 201
+
+def test_rs_8():
+    request = requests.put('https://reqres.in/api/users/2', json=dt_8)
+    received_request = request.json()
+    assert request.status_code == 200
+
+def test_rs_9():
+    request = requests.patch('https://reqres.in/api/users/2', json=dt_9)
+    received_request = request.json()
+    assert request.status_code == 200
+
+def test_rs_10():
+    request = requests.delete('https://reqres.in/api/users/2')
+    assert request.status_code == 204
+
+
+def test_rs_11():
+    request = requests.post('https://reqres.in/api/register', json=dt_11)
+    received_request = request.json()
+    assert request.status_code == 200
+    assert received_request == er_11
+
+def test_rs_12():
+    request = requests.post('https://reqres.in/api/register', json=dt_12)
+    received_request = request.json()
+    assert request.status_code == 400
+    assert received_request == er_12
+
+def test_rs_13():
+    request = requests.post('https://reqres.in/api/login', json=dt_13)
+    received_request = request.json()
+    assert request.status_code == 200
+    assert received_request == er_13
+
+def test_rs_14():
+    request = requests.post('https://reqres.in/api/login', json=dt_14)
+    received_request = request.json()
+    assert request.status_code == 400
+    assert received_request == er_14
+
+
